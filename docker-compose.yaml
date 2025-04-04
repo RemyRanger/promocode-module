@@ -1,0 +1,47 @@
+services:
+  clickhouse:
+    image: "clickhouse/clickhouse-server:22.2-alpine"
+    restart: unless-stopped
+    hostname: clickhouse
+    volumes:
+      - ${HOME}/test-indy/docker/data/clickhouse:/var/lib/clickhouse
+      - ${PWD}/.clickhouse/config/config.xml:/etc/clickhouse-server/config.d/config.xml
+      - ${PWD}/.clickhouse/config/users.xml:/etc/clickhouse-server/users.d/users.xml
+    ports:
+      - "127.0.0.1:8123:8123"
+      - "127.0.0.1:9000:9000"
+
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_DB: promocodedb
+      POSTGRES_USER: changeuser
+      POSTGRES_PASSWORD: changeme
+    volumes:
+      - ${HOME}/test-indy/docker/data/pg:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"
+
+  otel-collector:
+    image: "otel/opentelemetry-collector-contrib:latest"
+    restart: unless-stopped
+    command: ["--config=/etc/otelcol-config.yml"]
+    volumes:
+      - ./.otel-collector/config/otelcol-config.yaml:/etc/otelcol-config.yml
+    ports:
+      - "127.0.0.1:4317:4317" # OTLP over gRPC receiver
+    depends_on:
+      - clickhouse
+
+  grafana:
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    volumes:
+      - ./.grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./.grafana/provisioning/:/etc/grafana/provisioning/
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      - GF_INSTALL_PLUGINS=grafana-clickhouse-datasource

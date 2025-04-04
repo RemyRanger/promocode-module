@@ -1,0 +1,392 @@
+openapi: 3.0.3
+info:
+  title: Promocode - API
+  version: '1.0'
+  description: |-
+    Promocode - API
+
+    We use the API Specification to describe each endpoint. The API self-description also contains type information to help you error-check your requests.
+  contact:
+    name: Developers Contact
+    email: developers@sample.com
+  license:
+    name: private-license
+    url: https://sample.com/cgu
+servers:
+  - url: https://0.0.0.0:8090/v1
+    description: API base url.
+security:
+  - bearerAuth: []
+paths:
+  /healthcheck:
+    get:
+      tags:
+        - Healthcheck
+      summary: Health Check
+      description: The healthcheck endpoint retrieve 200 code if service is up.
+      operationId: getHealth
+      responses:
+        '200':
+          description: Successful operation.
+        '400':
+          $ref: '#/components/responses/400_Error'
+        '500':
+          $ref: '#/components/responses/500_Error'
+
+  /promocodes:
+    post:
+      tags:
+        - Promocodes
+      summary: Save Promocode
+      description: Save new Promocode.
+      operationId: savePromocode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/promocodeIn'
+      responses:
+        '201':
+          description: Created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/promocode'
+        '400':
+          $ref: '#/components/responses/400_Error'
+        '500':
+          $ref: '#/components/responses/500_Error'
+
+  /promocodes/_validate:
+    post:
+      tags:
+        - Promocodes
+      summary: Validate Promocode
+      description: Ask for promocode validation.
+      operationId: validatePromocode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/promocodeValidation'
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/promocodeValidationResponse'
+        '400':
+          $ref: '#/components/responses/400_Error'
+        '404':
+          $ref: '#/components/responses/404_Error'
+        '500':
+          $ref: '#/components/responses/500_Error'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ModelError:
+      description: A representation of an errorMessage
+      type: object
+      properties:
+        errorMessage:
+          type: string
+          description: error Message
+    id:
+      type: string
+      description: |
+        The unique ID of an object.
+      pattern: ^[-_0-9a-zA-Z]+$
+      minLength: 36
+      maxLength: 36
+      example: b76c02d2-f68f-4ab1-bb97-c75f357c2a75
+      x-go-type: googleuuid.UUID
+      x-oapi-codegen-extra-tags:
+        validate: required,uuid4
+      x-go-type-import:
+        path: github.com/google/uuid
+        name: googleuuid
+    audit:
+      type: object
+      required:
+        - createdAt
+        - updatedAt
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+          description: Created date.
+          example: '2024-08-30T14:48:15.062268031+02:00'
+        updatedAt:
+          type: string
+          format: date-time
+          description: Updated date.
+          example: '2024-08-30T14:48:15.062268031+02:00'
+    advantage:
+      type: object
+      x-oapi-codegen-extra-tags:
+        validate: required
+      required: 
+        -  percent
+      properties:
+        percent:
+          type: integer
+          format: int64
+          minimum: 0
+          maximum: 100
+          description: Promocode advantge in percent.
+          x-oapi-codegen-extra-tags:
+            validate: required,lte=100,gte=0
+    dateRestriction:
+      type: object
+      required: 
+        - date
+      properties:
+        date:
+          type: object
+          x-oapi-codegen-extra-tags:
+            validate: required
+          required: 
+            - after
+            - before
+          properties:
+            after:
+              type: string
+              format: date
+              example: "2019-01-01"
+              x-oapi-codegen-extra-tags:
+                validate: required
+            before:
+              type: string
+              format: date
+              example: "2020-06-30"
+              x-oapi-codegen-extra-tags:
+                validate: required
+    ageRule:
+      type: object
+      required: 
+        - age
+      properties:
+        age:
+          type: object
+          properties:
+            eq:
+              type: integer
+              format: int64
+              minimum: 0
+              maximum: 120
+              description: Age to be equal
+              example: 40
+              x-oapi-codegen-extra-tags:
+                validate: omitempty,gte=0,lte=120
+            lt:
+              type: integer
+              format: int64
+              description: Age to be equal
+              minimum: 0
+              maximum: 120
+              example: 40
+              x-oapi-codegen-extra-tags:
+                validate: omitempty,gte=0,lte=120
+            gt:
+              type: integer
+              format: int64
+              description: Age to be equal
+              minimum: 0
+              maximum: 120
+              example: 40
+              x-oapi-codegen-extra-tags:
+                validate: omitempty,gte=0,lte=120
+          x-oapi-codegen-extra-tags:
+            validate: required
+    weatherRule:
+      type: object
+      required: 
+        - weather
+      properties:
+        weather:
+          type: object
+          x-oapi-codegen-extra-tags:
+            validate: required
+          required: 
+            - is
+            - temp
+          properties:
+            is:
+              description: Wheather type
+              type: string
+              enum:
+                - clear
+              x-oapi-codegen-extra-tags:
+                validate: required,oneof=clear
+            temp:
+              type: object
+              required: 
+                - gt
+              properties:
+                gt:
+                  type: integer
+                  format: int64
+                  example: 15
+                  x-oapi-codegen-extra-tags:
+                    validate: required,gte=0
+    rule:
+      type: object
+      oneOf:
+        - $ref: '#/components/schemas/ageRule'
+        - $ref: '#/components/schemas/weatherRule'
+        - $ref: '#/components/schemas/orCondition'
+        - $ref: '#/components/schemas/andCondition'
+    orCondition:
+      type: object
+      required: 
+        - or
+      properties:
+        or:
+          type: array
+          items:
+            $ref: '#/components/schemas/rule'
+          x-oapi-codegen-extra-tags:
+            validate: required,dive
+    andCondition:
+      type: object
+      required: 
+        - and
+      properties:
+        and:
+          type: array
+          items:
+            $ref: '#/components/schemas/rule'
+          x-oapi-codegen-extra-tags:
+            validate: required,dive
+    restriction:
+      type: object
+      oneOf:
+        - $ref: '#/components/schemas/dateRestriction'
+        - $ref: '#/components/schemas/orCondition'
+        - $ref: '#/components/schemas/andCondition'
+    promocodeIn:
+      type: object
+      description: Promocode input model.
+      required:
+        - name
+        - advantage
+        - restrictions
+      properties:
+        name:
+          type: string
+          description: Promocode name.
+          x-oapi-codegen-extra-tags:
+            validate: required
+        advantage:
+          $ref: '#/components/schemas/advantage'
+        restrictions:
+          type: array
+          items: 
+            $ref: '#/components/schemas/restriction'
+          x-oapi-codegen-extra-tags:
+            validate: required,dive
+    promocode:
+      type: object
+      description: Promocode model.
+      required:
+        - id
+      allOf:
+        - properties:
+            id:
+              $ref: '#/components/schemas/id'
+        - $ref: '#/components/schemas/audit'
+        - $ref: '#/components/schemas/promocodeIn'
+    argument:
+      type: object
+      x-oapi-codegen-extra-tags:
+        validate: required
+      required: 
+        - age
+        - town
+      properties:
+        age:
+          type: integer
+          format: int64
+          minimum: 0
+          maximum: 120
+          example: 25
+          x-oapi-codegen-extra-tags:
+            validate: required,gte=0,lte=120
+        town:
+          type: string
+          example: Lyon
+          x-oapi-codegen-extra-tags:
+            validate: required
+    promocodeValidation:
+      type: object
+      required: 
+        - promocode_name
+        - arguments
+      properties:
+        promocode_name:
+          type: string
+          description: Promocode name.
+          example: WeatherCode
+          x-oapi-codegen-extra-tags:
+            validate: required
+        arguments:
+          $ref: '#/components/schemas/argument'
+    promocodeValidationResponse:
+      type: object
+      required: 
+        - promocode_name
+        - status
+      properties:
+        promocode_name:
+          type: string
+          description: Promocode name.
+          example: WeatherCode
+          x-oapi-codegen-extra-tags:
+            validate: required
+        status:
+          description: Status
+          type: string
+          enum:
+            - accepted
+            - denied
+          x-oapi-codegen-extra-tags:
+            validate: required,oneof=accepted denied
+        reasons:
+          type: array
+          items:
+            type: string
+
+  responses:
+    400_Error:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ModelError'
+          example:
+            errorMessage: Bad Request
+    404_Error:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ModelError'
+          example:
+            errorMessage: Not Found
+    500_Error:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ModelError'
+          example:
+            errorMessage: Internal Server Error

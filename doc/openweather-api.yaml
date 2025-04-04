@@ -1,0 +1,80 @@
+openapi: 3.0.3
+info:
+  title: Openweather - API
+  version: '1.0'
+  description: |-
+    Openweather - API
+  contact:
+    name: Developers Contact
+    email: developers@sample.com
+  license:
+    name: private-license
+    url: https://sample.com/cgu
+servers:
+  - url: https://api.openweathermap.org/data/2.5
+    description: API base url.
+security:
+  - bearerAuth: []
+paths:
+  /weather:
+    get:
+      tags:
+        - Weather
+      summary: Fetch Weather
+      description: Fetch Weather according to the lat/lon location.
+      operationId: fetchWeather
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/promocodeIn'
+      responses:
+        '201':
+          description: Created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/promocodeIn'
+        '400':
+          $ref: '#/components/responses/400_Error'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ModelError:
+      description: A representation of an errorMessage
+      type: object
+      properties:
+        errorMessage:
+          type: string
+          description: error Message
+    promocodeIn:
+      type: object
+      description: Promocode input model.
+      required:
+        - name
+        - advantage
+        - openapi
+        - baseUrl
+      properties:
+        name:
+          type: string
+          description: Promocode name.
+          x-oapi-codegen-extra-tags:
+            validate: required
+
+  responses:
+    400_Error:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ModelError'
+          example:
+            errorMessage: Bad Request

@@ -1,0 +1,15 @@
+server:
+  env: 'DEV'
+  addr: '0.0.0.0:8090'
+
+security:
+  secret: '0TMbPDwIwB5eVzOGjpnJrZtnHRoFlLXbCGyw44CJLGh5uPJjmOg3uzQyNkF9Tee'
+
+db:
+  addr: 'host=127.0.0.1 user=changeuser password=changeme dbname=promocodedb port=5432 sslmode=disable TimeZone=UTC'
+
+telemetry:
+  addr: '127.0.0.1:4317'
+
+logs:
+  level: 'DEBUG'
