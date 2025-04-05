@@ -9,8 +9,7 @@ import (
 
 func (r *Repository) GetPromocode(ctx context.Context, promocodeName string) (*models.Promocode, error) {
 	model := &models.Promocode{}
-	model.Name = promocodeName
-	if err := r.BeginWithCtx(ctx).First(model).Error; err != nil {
+	if err := r.BeginWithCtx(ctx).Where("name = ?", promocodeName).First(model).Error; err != nil {
 		return nil, errors.WithStack(err)
 	}
 

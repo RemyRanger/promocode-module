@@ -97,9 +97,16 @@ components:
       description: A representation of an errorMessage
       type: object
       properties:
-        errorMessage:
+        status:
+          type: integer
+          description: error Status
+        error:
           type: string
           description: error Message
+        details:
+          type: array
+          items:
+            type: string
     id:
       type: string
       description: |

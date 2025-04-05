@@ -10,11 +10,11 @@ import (
 
 // Config structure to hold the configuration values
 type Config struct {
-	Server    Server    `mapstructure:"server" validate:"required"`
-	Security  Security  `mapstructure:"security" validate:"required"`
-	Telemetry Telemetry `mapstructure:"telemetry" validate:"required"`
-	Db        Db        `mapstructure:"db" validate:"required"`
-	Logs      Logs      `mapstructure:"logs" validate:"required"`
+	Server      Server      `mapstructure:"server" validate:"required"`
+	Openweather Openweather `mapstructure:"openweather" validate:"required"`
+	Telemetry   Telemetry   `mapstructure:"telemetry" validate:"required"`
+	Db          Db          `mapstructure:"db" validate:"required"`
+	Logs        Logs        `mapstructure:"logs" validate:"required"`
 }
 
 type Server struct {
@@ -22,8 +22,9 @@ type Server struct {
 	Addr string `mapstructure:"addr" validate:"required"`
 }
 
-type Security struct {
-	Secret string `mapstructure:"secret" validate:"required"`
+type Openweather struct {
+	Url    string `mapstructure:"url" validate:"required"`
+	Apikey string `mapstructure:"apikey" validate:"required"`
 }
 
 type Telemetry struct {

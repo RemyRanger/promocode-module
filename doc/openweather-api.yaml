@@ -23,19 +23,59 @@ paths:
       summary: Fetch Weather
       description: Fetch Weather according to the lat/lon location.
       operationId: fetchWeather
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/promocodeIn'
+      parameters:
+        - name: q
+          in: query
+          description: City name and optional country code (e.g., "London,GB").
+          schema:
+            type: string
+        - name: lat
+          in: query
+          description: Latitude of the location. Used with the `lon` parameter.
+          schema:
+            type: number
+            format: float
+        - name: lon
+          in: query
+          description: Longitude of the location. Used with the `lat` parameter.
+          schema:
+            type: number
+            format: float
+        - name: zip
+          in: query
+          description: Zip code and country code (e.g., "94040,US").
+          schema:
+            type: string
+        - name: appid
+          in: query
+          description: Your unique API key.
+          required: true
+          schema:
+            type: string
+        - name: units
+          in: query
+          description: |
+            Units of measurement. Options:
+            - `standard`: Kelvin
+            - `metric`: Celsius
+            - `imperial`: Fahrenheit
+          schema:
+            type: string
+            enum: [standard, metric, imperial]
+            default: standard
+        - name: lang
+          in: query
+          description: Language code for the weather description (e.g., "en" for English).
+          schema:
+            type: string
+            default: en
       responses:
-        '201':
+        '200':
           description: Created.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/promocodeIn'
+                $ref: '#/components/schemas/weatherResponse'
         '400':
           $ref: '#/components/responses/400_Error'
 
@@ -54,20 +94,143 @@ components:
         errorMessage:
           type: string
           description: error Message
-    promocodeIn:
+    weatherResponse:
       type: object
-      description: Promocode input model.
-      required:
-        - name
-        - advantage
-        - openapi
-        - baseUrl
       properties:
+        coord:
+          type: object
+          properties:
+            lon:
+              type: number
+              format: float
+              description: Longitude.
+            lat:
+              type: number
+              format: float
+              description: Latitude.
+        weather:
+          type: array
+          description: Weather conditions.
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Weather condition ID.
+              main:
+                type: string
+                description: Group of weather parameters (Rain, Snow, etc.).
+                enum:
+                  - Clear
+                  - Clouds
+                  - Snow
+                  - Rain
+                  - Drizzle
+                  - Thunderstorm
+              description:
+                type: string
+                description: Weather condition within the group.
+              icon:
+                type: string
+                description: Weather icon ID.
+        base:
+          type: string
+          description: Internal parameter.
+        main:
+          type: object
+          properties:
+            temp:
+              type: number
+              format: float
+              description: Current temperature.
+            feels_like:
+              type: number
+              format: float
+              description: Perceived temperature.
+            temp_min:
+              type: number
+              format: float
+              description: Minimum temperature.
+            temp_max:
+              type: number
+              format: float
+              description: Maximum temperature.
+            pressure:
+              type: integer
+              description: Atmospheric pressure (hPa).
+            humidity:
+              type: integer
+              description: Humidity percentage.
+        visibility:
+          type: integer
+          description: Visibility in meters.
+        wind:
+          type: object
+          properties:
+            speed:
+              type: number
+              format: float
+              description: Wind speed.
+            deg:
+              type: integer
+              description: Wind direction in degrees.
+            gust:
+              type: number
+              format: float
+              description: Wind gusts.
+        clouds:
+          type: object
+          properties:
+            all:
+              type: integer
+              description: Cloudiness percentage.
+        rain:
+          type: object
+          properties:
+            '1h':
+              type: number
+              format: float
+              description: Rain volume for the last hour in mm.
+        snow:
+          type: object
+          properties:
+            '1h':
+              type: number
+              format: float
+              description: Snow volume for the last hour in mm.
+        dt:
+          type: integer
+          description: Time of data calculation (Unix timestamp).
+        sys:
+          type: object
+          properties:
+            type:
+              type: integer
+              description: Internal parameter.
+            id:
+              type: integer
+              description: Internal parameter.
+            country:
+              type: string
+              description: Country code (ISO 3166).
+            sunrise:
+              type: integer
+              description: Sunrise time (Unix timestamp).
+            sunset:
+              type: integer
+              description: Sunset time (Unix timestamp).
+        timezone:
+          type: integer
+          description: Shift in seconds from UTC.
+        id:
+          type: integer
+          description: City ID.
         name:
           type: string
-          description: Promocode name.
-          x-oapi-codegen-extra-tags:
-            validate: required
+          description: City name.
+        cod:
+          type: integer
+          description: HTTP status code.
 
   responses:
     400_Error:

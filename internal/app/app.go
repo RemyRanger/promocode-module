@@ -16,6 +16,10 @@ import (
 	promocode_core "APIs/internal/services/promocode/core"
 	promocode_ports "APIs/internal/services/promocode/ports"
 
+	weather_client "APIs/internal/services/weather/adapters/openweather_client"
+	weather_repository "APIs/internal/services/weather/adapters/repository"
+	weather_core "APIs/internal/services/weather/core"
+
 	"gorm.io/gorm"
 )
 
@@ -37,7 +41,7 @@ func NewApp(app_name string, app_config config.Config) (*gorm.DB, *chi.Mux) {
 		// Set a timeout value on the request context (ctx), that will signal
 		// through ctx.Done() that the request has timed out and further
 		// processing should be stopped.
-		middleware.Timeout(3*time.Second),
+		middleware.Timeout(30*time.Second),
 
 		// middlewares
 		middleware.Recoverer,
@@ -53,7 +57,8 @@ func NewApp(app_name string, app_config config.Config) (*gorm.DB, *chi.Mux) {
 	)
 
 	// Register global services
-	promocode_ports.HandlerWithOptions(promocode_handler.NewHandler(promocode_core.New(promocode_repository.New(gormDb))), promocode_ports.ChiServerOptions{BaseURL: pathPrefix, BaseRouter: router})
+	weatherService := weather_core.NewService(weather_repository.New(gormDb), weather_client.NewClientAPI(app_config))
+	promocode_ports.HandlerWithOptions(promocode_handler.NewHandler(promocode_core.NewService(promocode_repository.New(gormDb), weatherService)), promocode_ports.ChiServerOptions{BaseURL: pathPrefix, BaseRouter: router})
 
 	return gormDb, router
 }

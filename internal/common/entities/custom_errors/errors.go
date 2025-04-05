@@ -9,7 +9,7 @@ import (
 type ErrorCode string
 
 const (
-	ErrStorageConnection ErrorCode = "err_storage_connection"
+	ErrPromocodeExist ErrorCode = "err_promocode_exist"
 )
 
 type CustomError struct {

@@ -3,9 +3,11 @@ package handler
 import (
 	"APIs/internal/common/server"
 	"APIs/internal/services/promocode/ports"
+	"errors"
 	"net/http"
 
 	"go.opentelemetry.io/otel"
+	"gorm.io/gorm"
 )
 
 const handler_name = "storages-handler"
@@ -83,6 +85,10 @@ func (h *Handler) ValidatePromocode(w http.ResponseWriter, r *http.Request) {
 	// Call service
 	reasons, err := h.service.ValidatePromocode(ctx, body.PromocodeName, body.Arguments.Age, body.Arguments.Town)
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			server.RespondError(w, r, err, http.StatusNotFound)
+			return
+		}
 		server.RespondError(w, r, err, http.StatusInternalServerError)
 		return
 	}

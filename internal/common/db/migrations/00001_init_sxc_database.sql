@@ -14,7 +14,9 @@ CREATE TABLE IF NOT EXISTS promocode (
 
 CREATE TABLE IF NOT EXISTS weather (
     id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-    weather JSONB NOT NULL,
+    town VARCHAR(256) NOT NULL,
+    temp DECIMAL NOT NULL,
+    type VARCHAR(256) NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     deleted_at TIMESTAMPTZ

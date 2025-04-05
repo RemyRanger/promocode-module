@@ -2,8 +2,9 @@ server:
   env: 'DEV'
   addr: '0.0.0.0:8090'
 
-security:
-  secret: '0TMbPDwIwB5eVzOGjpnJrZtnHRoFlLXbCGyw44CJLGh5uPJjmOg3uzQyNkF9Tee'
+openweather:
+  url: 'https://api.openweathermap.org/data/2.5'
+  apikey: 'd0562f476913da692a065c608d0539f6'
 
 db:
   addr: 'host=127.0.0.1 user=changeuser password=changeme dbname=promocodedb port=5432 sslmode=disable TimeZone=UTC'
