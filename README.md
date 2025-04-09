@@ -1,6 +1,6 @@
 # Promocode API.
 
-[![Build Status](https://github.com/RemyRanger/promocode-module/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/RemyRanger/promocode-module/actions/workflows/main.yaml)
+[![Build Status](https://github.com/RemyRanger/promocode-module/actions/workflows/main.yaml/badge.svg?branch=main)](https://github.com/RemyRanger/promocode-module/actions/workflows/main.yaml)
 
 ## Design
 
