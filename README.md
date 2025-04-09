@@ -15,6 +15,7 @@
 
 - Go (v1.24 or later)
 - Docker
+- Vscode (recommended)
 
 ### Steps
 
@@ -71,6 +72,7 @@ Postman collection is exported in test/postman/Promocode - API.postman_collectio
 | struct validator  | github.com/go-playground/validator/v10                |
 | uuid generator    | github.com/google/uuid                                |
 | config            | github.com/spf13/viper                                |
+| db orm            | gorm.io/gorm                                          |
 | db migration      | github.com/pressly/goose/v3                           |
 | telemetry         | go.opentelemetry.io/otel                              |
 | looger            | github.com/rs/zerolog                                 |
