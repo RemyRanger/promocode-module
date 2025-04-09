@@ -56,6 +56,10 @@
 
 7. Check telemetry from Grafana:  http://127.0.0.1:3000/grafana/dashboards
 
+## Test with postman
+
+Postman collection is exported in test/postman/Promocode - API.postman_collection.json
+
 ---
 
 ## Main libraries
