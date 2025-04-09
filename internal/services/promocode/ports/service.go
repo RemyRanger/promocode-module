@@ -8,5 +8,5 @@ import (
 type Service interface {
 	SavePromocode(ctx context.Context, model *models.Promocode) (*models.Promocode, error)
 
-	ValidatePromocode(ctx context.Context, promocodeName string, age int64, town string) ([]string, error)
+	ValidatePromocode(ctx context.Context, promocodeName string, age int64, town string) (*models.Promocode, []string, error)
 }

@@ -12,7 +12,7 @@ var _ = Describe("Healthcheck IT", func() {
 	Context("GET /healthcheck", func() {
 		It("should get a healtcheck ok response", func() {
 			// Prepare the HTTP GET request
-			req := httptest.NewRequest(http.MethodGet, "/healthcheck", nil)
+			req := httptest.NewRequest(http.MethodGet, "/v1/healthcheck", nil)
 			rec := httptest.NewRecorder()
 
 			// Serve the request using the router

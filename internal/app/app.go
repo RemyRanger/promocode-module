@@ -50,7 +50,7 @@ func NewApp(app_name string, app_config config.Config) (*gorm.DB, *chi.Mux) {
 		render.SetContentType(render.ContentTypeJSON),
 
 		// healthcheck
-		middleware.Heartbeat("/healthcheck"),
+		middleware.Heartbeat(pathPrefix+"/healthcheck"),
 
 		// telemetry
 		otelchi.Middleware(app_name, otelchi.WithChiRoutes(router)),

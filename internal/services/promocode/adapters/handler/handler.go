@@ -40,7 +40,7 @@ func (h *Handler) SavePromocode(w http.ResponseWriter, r *http.Request) {
 
 	// Validate Restrictions
 	if err := validateRestrictions(body.Restrictions); err != nil {
-		server.RespondError(w, r, err, http.StatusBadRequest)
+		server.RespondError(w, r, err, http.StatusInternalServerError)
 		return
 	}
 
@@ -83,7 +83,7 @@ func (h *Handler) ValidatePromocode(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Call service
-	reasons, err := h.service.ValidatePromocode(ctx, body.PromocodeName, body.Arguments.Age, body.Arguments.Town)
+	promocode, reasons, err := h.service.ValidatePromocode(ctx, body.PromocodeName, body.Arguments.Age, body.Arguments.Town)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			server.RespondError(w, r, err, http.StatusNotFound)
@@ -99,6 +99,9 @@ func (h *Handler) ValidatePromocode(w http.ResponseWriter, r *http.Request) {
 		respBody = ports.PromocodeValidationResponse{
 			PromocodeName: body.PromocodeName,
 			Status:        ports.Accepted,
+			Advantage: &ports.Advantage{
+				Percent: promocode.AdvantagePercent,
+			},
 		}
 	} else {
 		respBody = ports.PromocodeValidationResponse{

@@ -29,25 +29,25 @@ func (s *Service) SavePromocode(ctx context.Context, model *models.Promocode) (*
 	return s.repository.CreatePromocode(ctx, model)
 }
 
-func (s *Service) ValidatePromocode(ctx context.Context, promocodeName string, age int64, town string) ([]string, error) {
+func (s *Service) ValidatePromocode(ctx context.Context, promocodeName string, age int64, town string) (*models.Promocode, []string, error) {
 	// Fetch promocode from DB
 	promocode, err := s.repository.GetPromocode(ctx, promocodeName)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	// Map promocode to dto for processing on the DTO json struct
 	promocodeDto, err := ports.ModelToDto(promocode)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	// Validate Promocode restriction according to the inputs
 	restrictionValidator := NewRestrictionsValidator(ctx, s.weatherService, age, town)
 	reasons, err := restrictionValidator.validateRestrictions(promocodeDto.Restrictions)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return reasons, nil
+	return promocode, reasons, nil
 }

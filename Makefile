@@ -28,4 +28,7 @@ update_deps:
 	go mod tidy
 
 test_go:
-	ginkgo -v -r -cover -coverpkg=APIs/internal/... -coverprofile=coverage.txt ./...
+	ginkgo -v -r -cover -coverpkg=APIs/internal/... -coverprofile=coverage.cov ./...
+
+coverage_html:
+	go tool cover -html=coverage.cov
