@@ -11,6 +11,14 @@
 
 ## Installation
 
+### Composants
+
+- promocode-api
+- postgres:17
+- otel-collector (telemetry)
+- clickhouse (telemetry)
+- grafana (telemetry)
+
 ### Prerequisites
 
 - Go (v1.24 or later)
@@ -19,7 +27,7 @@
 
 ### Steps
 
-1. Run database, otel-collector, grafana with docker compose:
+1. Run database, otel-collector, grafana and clickhouse with docker compose:
     ```bash
     make docker_compose_up
     ```
@@ -106,7 +114,7 @@ The OpenAPI Generator is used to:
 
 OAS files can be customized doc/ directory.
 
-### Algorithme
+### Restrictions validation
 
 ![Restrictions tree](./doc/img/image.png)
 
