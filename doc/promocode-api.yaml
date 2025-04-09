@@ -103,6 +103,8 @@ components:
         error:
           type: string
           description: error Message
+        detail:
+          type: string
         details:
           type: array
           items:
@@ -371,6 +373,8 @@ components:
           type: array
           items:
             type: string
+        advantage:
+          $ref: '#/components/schemas/advantage'
 
   responses:
     400_Error:

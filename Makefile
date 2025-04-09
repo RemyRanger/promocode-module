@@ -17,17 +17,17 @@ generate_api_interfaces:
 	go generate -x $$(go list ./... | grep -v '/ports\|/adapters|/core' | tr '\n' ' ')
 
 # Build binary
-build:
+build: generate_api_interfaces
 	go build -o cmd/promocode-module cmd/main.go
 
-run:
+run: generate_api_interfaces
 	go run cmd/main.go
 
 update_deps:
 	go get -u ./...
 	go mod tidy
 
-test_go:
+test_go: generate_api_interfaces
 	ginkgo -v -r -cover -coverpkg=APIs/internal/... -coverprofile=coverage.cov ./...
 
 coverage_html:
